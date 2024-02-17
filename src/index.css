@@ -34,7 +34,17 @@ h1 {
 }
 
 textarea {
-  --tw-shadow: 0 0 transparent;
+  appearance: none;
+  background-color: #fff;
+  border-color: #fff;
+  border-radius: 0;
+  border-width: 1px;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  padding: .5rem .75rem
+}
+
+[multiple],[type=date],[type=datetime-local],[type=email],[type=month],[type=number],[type=password],[type=search],[type=tel],[type=text],[type=time],[type=url],[type=week],select,textarea {
   -webkit-appearance: none;
   appearance: none;
   background-color: #fff;
@@ -44,6 +54,46 @@ textarea {
   font-size: 1rem;
   line-height: 1.5rem;
   padding: .5rem .75rem
+}
+
+[multiple]:focus,[type=date]:focus,[type=datetime-local]:focus,[type=email]:focus,[type=month]:focus,[type=number]:focus,[type=password]:focus,[type=search]:focus,[type=tel]:focus,[type=text]:focus,[type=time]:focus,[type=url]:focus,[type=week]:focus,select:focus,textarea:focus {
+  border-color: #fff;
+  box-shadow: 0 0 transparent,0 0 transparent,0 0 transparent;
+  outline: 2px solid transparent;
+  outline-offset: 2px
+}
+
+.btn-neutral {
+  background-color: #fff;
+  background-color: #212121;
+  border-color: rgba(0,0,0,.15);
+  border-color: hsla(0,0%,100%,.15);
+  border-width: 1px;
+  font-size: .875rem;
+  line-height: 1.25rem
+}
+
+.btn-neutral:hover {
+  background-color: #f9f9f9;
+  background-color: #2f2f2f;
+}
+
+.btn-neutral:focus {
+  --tw-ring-offset-shadow: 0 0 0 0px #fff;
+  --tw-ring-shadow: 0 0 0 calc(2px + 0px) rgba(69,89,164,.5);
+  --tw-ring-offset-width: 2px;
+  box-shadow: 0 0 transparent,0 0 transparent,0 0 transparent;
+  box-shadow: 0 0 transparent,0 0 transparent,0 0 transparent
+}
+
+.btn-neutral.focus-visible {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgba(103,103,103,1)
+}
+
+.btn-neutral:focus-visible {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgba(103,103,103,1)
 }
 
 /*
