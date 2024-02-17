@@ -10,6 +10,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #212121;
 }
 
 html, body, #root {
@@ -31,6 +32,20 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
+
+textarea {
+  --tw-shadow: 0 0 transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  border-color: #9b9b9b;
+  border-radius: 0;
+  border-width: 1px;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  padding: .5rem .75rem
+}
+
 /*
 button {
   border-radius: 8px;
@@ -51,15 +66,3 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 */
-
-@media (prefers-color-scheme: light) {
-  :root {
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
