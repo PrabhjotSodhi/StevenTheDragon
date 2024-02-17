@@ -7,16 +7,18 @@ const app = express();
 const port = 3000;
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
 
-const completions = await openai.chat.completions.create({
-    messages: [{ role: "system", content: "You are a helpful assistant." }],
-    model: "gpt-3.5-turbo",
-});
-
 app.use(bodyParser.json());
 app.use(cors());
 
-app.post('/', (req, res) => {
-  res.json({message: "Hello World"});
+app.post('/', async (req, res) => {
+  const completion = await openai.chat.completions.create({
+    messages: [{ role: "system", content: "You are a helpful assistant." }],
+    model: "gpt-3.5-turbo",
+    max_tokens: 7,
+    temperature: 0,
+  });
+  console.log(completion.choices[0]);
+  res.json({message: completion.choices[0]})
 });
 
 app.listen(port, () => {
