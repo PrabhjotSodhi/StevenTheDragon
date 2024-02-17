@@ -36,7 +36,7 @@ function App() {
     <div className="flex h-full w-full overflow-hidden">
       {/* Side bar */}
       <nav className="hidden w-[260px] flex-col justify-between overflow-x-hidden bg-neutral-900 px-3 py-3.5 sm:flex" aria-history="Chat History">
-        <button className="rounded-lg border-2 border-neutral-950 px-1 py-3 text-sm hover:border-neutral-950 hover:bg-neutral-950">+ New Chat</button>
+        <button className="btn btn-neutral group relative w-full whitespace-nowrap rounded-xl border-2 border-neutral-950 px-4 py-3 text-sm text-gray-100 md:whitespace-normal">+ New Chat</button>
         <ul className="flex h-full flex-col gap-2 overflow-y-auto py-4 text-sm text-gray-100">
           <li className="rounded-lg px-4 py-4 hover:cursor-pointer hover:bg-neutral-950">Test One</li>
         </ul>
