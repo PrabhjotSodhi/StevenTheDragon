@@ -11,6 +11,11 @@ type Message = {
   content: string;
 };
 
+type Session = {
+  title: string;
+  conversation: Message[];
+};
+
 function Card({ title, description }: CardProps) {
   return (
     <button className="btn btn-neutral group relative w-full whitespace-nowrap rounded-xl px-4 py-3 text-left text-gray-100 md:whitespace-normal">
@@ -36,17 +41,27 @@ function Card({ title, description }: CardProps) {
 }
 
 function App() {
+  const defaultTitle = "New Chat";
+  const [title, setTitle] = useState(defaultTitle);
   const [message, setMessage] = useState("");
   const [response, setResponse] = useState("");
   const [conversation, setConversation] = useState<Message[]>([]);
-  const [title, setTitle] = useState("");
+  const [session, setSession] = useState<Session[]>([]);
 
-  const createChat = () => {
+  const createNewChat = () => {
+    setSession((prevSession) => [...prevSession, { title: title, conversation: conversation }]);
+
     setMessage("");
     setResponse("");
-    setTitle("");
+    setTitle(defaultTitle);
     setConversation([]);
   };
+
+  useEffect(() => {
+    if (response && title === defaultTitle) {
+      setTitle(response);
+    }
+  }, [response, title, setTitle]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -70,11 +85,18 @@ function App() {
     <div className="flex h-full w-full overflow-hidden">
       {/* Side bar */}
       <nav className="hidden w-[260px] flex-col justify-between overflow-x-hidden bg-neutral-900 px-3 py-3.5 sm:flex" aria-history="Chat History">
-        <button onClick={createChat} className="btn btn-neutral group relative w-full whitespace-nowrap rounded-xl border-2 border-neutral-950 px-4 py-3 text-sm text-gray-100 md:whitespace-normal">
+        <button onClick={createNewChat} className="btn btn-neutral group relative w-full whitespace-nowrap rounded-xl border-2 border-neutral-950 px-4 py-3 text-sm text-gray-100 md:whitespace-normal">
           + New Chat
         </button>
         <ul className="flex h-full flex-col gap-2 overflow-y-auto py-4 text-sm text-gray-100">
-          <li className="rounded-lg px-4 py-4 hover:cursor-pointer hover:bg-neutral-950">New Chat</li>
+          {session
+            .slice()
+            .reverse()
+            .map((conversation, index) => (
+              <li key={index} className="truncate rounded-lg px-4 py-4 hover:cursor-pointer hover:bg-neutral-950">
+                {conversation.title}
+              </li>
+            ))}
         </ul>
         <div className="flex w-full flex-col items-center border-t-2 pt-4">
           <p>Made by Prabhjot Sodhi</p>
