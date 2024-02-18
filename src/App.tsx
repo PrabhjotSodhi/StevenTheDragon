@@ -49,19 +49,37 @@ function App() {
   const [session, setSession] = useState<Session[]>([]);
 
   const createNewChat = () => {
-    setSession((prevSession) => [...prevSession, { title: title, conversation: conversation }]);
+    // Save current Session
+    setSession((prevSession) => [...prevSession, { title: defaultTitle, conversation: conversation }]);
 
+    console.log("Before: ", session, conversation);
+    // Set New Session
     setMessage("");
     setResponse("");
     setTitle(defaultTitle);
     setConversation([]);
+
+    // print out all sessions
+    console.log("After: ", session, conversation);
   };
 
   useEffect(() => {
     if (response && title === defaultTitle) {
       setTitle(response);
     }
-  }, [response, title, setTitle]);
+  }, [response, title]);
+
+  useEffect(() => {
+    if (title !== "New Chat") {
+      setSession((prevSession) => {
+        const updatedSession = [...prevSession];
+        if (updatedSession.length > 0) {
+          updatedSession[updatedSession.length - 1].title = title;
+        }
+        return updatedSession;
+      });
+    }
+  }, [title]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
