@@ -99,6 +99,10 @@ function App() {
       });
   };
 
+  useEffect(() => {
+    createNewChat();
+  }, []);
+
   return (
     <div className="flex h-full w-full overflow-hidden">
       {/* Side bar */}
