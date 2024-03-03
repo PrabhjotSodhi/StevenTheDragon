@@ -81,6 +81,16 @@ function App() {
     }
   }, [title]);
 
+  const handleTitle = (title: string) => {
+    const findSession = session.find((session) => session.title === title);
+    if (findSession) {
+      console.log("Changing Session to: ", title);
+      setConversation(findSession.conversation);
+    } else {
+      console.error("Session not found for title: ", title);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newMessage: Message = { role: "user", content: message };
@@ -115,7 +125,7 @@ function App() {
             .slice()
             .reverse()
             .map((conversation, index) => (
-              <li key={index} className="truncate rounded-lg px-4 py-4 hover:cursor-pointer hover:bg-neutral-950">
+              <li key={index} onClick={() => handleTitle(conversation.title)} className="truncate rounded-lg px-4 py-4 hover:cursor-pointer hover:bg-neutral-950">
                 {conversation.title}
               </li>
             ))}
