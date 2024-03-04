@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useDebugValue, useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 
@@ -49,8 +49,38 @@ function App() {
   const [session, setSession] = useState<Session[]>([]);
 
   const createNewChat = () => {
-    // Save current Session
-    setSession((prevSession) => [...prevSession, { title: defaultTitle, conversation: conversation }]);
+    // Find and update current session conversation
+    setSession((prevSession) => {
+      if (prevSession.length === 0) {
+        return [
+          {
+            title: defaultTitle,
+            conversation: [],
+          },
+        ];
+      }
+      const currentSessionIndex = prevSession.findIndex((session) => session.title === defaultTitle);
+      if (currentSessionIndex !== -1) {
+        prevSession[currentSessionIndex].conversation = conversation;
+      }
+      return [...prevSession, { title: defaultTitle, conversation: [] }];
+    });
+    /*
+    setSession((prevSession) => {
+      const findSession = session.find((session) => session.title === title);
+      if (findSession) {
+        findSession.conversation = conversation;
+      }
+      console.log("Session: ", session);
+      return [...prevSession];
+    });*/
+    // Set New Session
+    setMessage("");
+    setResponse("");
+    setTitle(defaultTitle);
+    setConversation([]);
+
+    /*setSession((prevSession) => [...prevSession, { title: defaultTitle, conversation: conversation }]);
 
     console.log("Before: ", session, conversation);
     // Set New Session
@@ -60,7 +90,7 @@ function App() {
     setConversation([]);
 
     // print out all sessions
-    console.log("After: ", session, conversation);
+    console.log("After: ", session, conversation);*/
   };
 
   useEffect(() => {
@@ -81,11 +111,25 @@ function App() {
     }
   }, [title]);
 
+  useEffect(() => {
+    // any changes to the conversation need to be added to the corrosponding session
+    setSession((prevSession) => {
+      const findSession = prevSession.find((session) => session.title === title);
+      if (findSession) {
+        findSession.conversation = conversation;
+      }
+      return [...prevSession];
+    });
+  }, [conversation]);
+
   const handleTitle = (title: string) => {
     const findSession = session.find((session) => session.title === title);
     if (findSession) {
       console.log("Changing Session to: ", title);
       setConversation(findSession.conversation);
+      setMessage("");
+      setResponse("");
+      console.log(conversation);
     } else {
       console.error("Session not found for title: ", title);
     }
@@ -93,6 +137,9 @@ function App() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (session.length === 0) {
+      createNewChat();
+    }
     const newMessage: Message = { role: "user", content: message };
     setConversation([...conversation, newMessage]);
     fetch("http://localhost:3000/", {
@@ -107,11 +154,9 @@ function App() {
         setResponse(data.message);
         setConversation([...conversation, newMessage, { role: "assistant", content: data.message }]);
       });
+    useDebugValue(conversation);
+    useDebugValue(session);
   };
-
-  useEffect(() => {
-    createNewChat();
-  }, []);
 
   return (
     <div className="flex h-full w-full overflow-hidden">
