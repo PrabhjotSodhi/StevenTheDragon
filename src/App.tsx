@@ -1,6 +1,4 @@
 import { useDebugValue, useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 
 interface CardProps {
   title: string;
@@ -12,6 +10,7 @@ type Message = {
 };
 
 type Session = {
+  id: number;
   title: string;
   conversation: Message[];
 };
@@ -42,6 +41,7 @@ function Card({ title, description }: CardProps) {
 
 function App() {
   const defaultTitle = "New Chat";
+  const [currentId, setCurrentId] = useState(Number);
   const [title, setTitle] = useState(defaultTitle);
   const [message, setMessage] = useState("");
   const [response, setResponse] = useState("");
@@ -49,48 +49,24 @@ function App() {
   const [session, setSession] = useState<Session[]>([]);
 
   const createNewChat = () => {
-    // Find and update current session conversation
     setSession((prevSession) => {
       if (prevSession.length === 0) {
+        setCurrentId(1);
         return [
           {
+            id: 1,
             title: defaultTitle,
             conversation: [],
           },
         ];
       }
-      const currentSessionIndex = prevSession.findIndex((session) => session.title === defaultTitle);
-      if (currentSessionIndex !== -1) {
-        prevSession[currentSessionIndex].conversation = conversation;
-      }
-      return [...prevSession, { title: defaultTitle, conversation: [] }];
+      return [...prevSession, { id: prevSession.length + 1, title: defaultTitle, conversation: [] }];
     });
-    /*
-    setSession((prevSession) => {
-      const findSession = session.find((session) => session.title === title);
-      if (findSession) {
-        findSession.conversation = conversation;
-      }
-      console.log("Session: ", session);
-      return [...prevSession];
-    });*/
-    // Set New Session
     setMessage("");
     setResponse("");
     setTitle(defaultTitle);
     setConversation([]);
-
-    /*setSession((prevSession) => [...prevSession, { title: defaultTitle, conversation: conversation }]);
-
-    console.log("Before: ", session, conversation);
-    // Set New Session
-    setMessage("");
-    setResponse("");
-    setTitle(defaultTitle);
-    setConversation([]);
-
-    // print out all sessions
-    console.log("After: ", session, conversation);*/
+    setCurrentId(session.length + 1);
   };
 
   useEffect(() => {
@@ -112,9 +88,8 @@ function App() {
   }, [title]);
 
   useEffect(() => {
-    // any changes to the conversation need to be added to the corrosponding session
     setSession((prevSession) => {
-      const findSession = prevSession.find((session) => session.title === title);
+      const findSession = prevSession.find((session) => session.id === currentId);
       if (findSession) {
         findSession.conversation = conversation;
       }
@@ -122,13 +97,14 @@ function App() {
     });
   }, [conversation]);
 
-  const handleTitle = (title: string) => {
-    const findSession = session.find((session) => session.title === title);
+  const handleTitle = (id: number) => {
+    const findSession = session.find((session) => session.id === id);
     if (findSession) {
       console.log("Changing Session to: ", title);
       setConversation(findSession.conversation);
       setMessage("");
       setResponse("");
+      setCurrentId(id);
       console.log(conversation);
     } else {
       console.error("Session not found for title: ", title);
@@ -170,7 +146,7 @@ function App() {
             .slice()
             .reverse()
             .map((conversation, index) => (
-              <li key={index} onClick={() => handleTitle(conversation.title)} className="truncate rounded-lg px-4 py-4 hover:cursor-pointer hover:bg-neutral-950">
+              <li key={index} onClick={() => handleTitle(conversation.id)} className="truncate rounded-lg px-4 py-4 hover:cursor-pointer hover:bg-neutral-950">
                 {conversation.title}
               </li>
             ))}
