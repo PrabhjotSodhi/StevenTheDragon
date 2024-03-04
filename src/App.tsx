@@ -15,6 +15,11 @@ type Session = {
   conversation: Message[];
 };
 
+function getSessionStorage(defaultValue: Session[] = []) {
+  const session = window.sessionStorage.getItem("session");
+  return session ? JSON.parse(session) : defaultValue;
+}
+
 function Card({ title, description }: CardProps) {
   return (
     <button className="btn btn-neutral group relative w-full whitespace-nowrap rounded-xl px-4 py-3 text-left text-gray-100 md:whitespace-normal">
@@ -46,7 +51,7 @@ function App() {
   const [message, setMessage] = useState("");
   const [response, setResponse] = useState("");
   const [conversation, setConversation] = useState<Message[]>([]);
-  const [session, setSession] = useState<Session[]>([]);
+  const [session, setSession] = useState<Session[]>(getSessionStorage());
 
   const createNewChat = () => {
     setSession((prevSession) => {
@@ -96,6 +101,10 @@ function App() {
       return [...prevSession];
     });
   }, [conversation]);
+
+  useEffect(() => {
+    window.sessionStorage.setItem("session", JSON.stringify(session));
+  }, [session]);
 
   const handleTitle = (id: number) => {
     const findSession = session.find((session) => session.id === id);
