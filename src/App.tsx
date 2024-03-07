@@ -44,6 +44,29 @@ function Card({ title, description }: CardProps) {
   );
 }
 
+function ChatBubble({ role, content }: Message) {
+  const now = new Date();
+  return (
+    <div className="flex-1 overflow-hidden">
+      <div className="flex flex-col pb-9 text-sm">
+        <div className="text w-full text-gray-100">
+          <div className="m-auto justify-center px-4 py-2 text-base md:gap-6">
+            <div className="mx-auto flex flex-1 gap-3 text-base md:max-w-3xl md:px-5 lg:max-w-[40rem] lg:px-1 xl:max-w-[48rem] xl:px-5">
+              <img className="h-12 w-12 rounded-full" src={role == "user" ? "https://media.licdn.com/dms/image/D560BAQFRLSRnl2VI9g/company-logo_200_200/0/1680703679855/flightstory_logo?e=2147483647&v=beta&t=Jbe6gCZIwy3rctDwmDMlMri0LW8lsIpSFr0Lxww-xBY" : "https://i2-prod.walesonline.co.uk/incoming/article22597639.ece/ALTERNATES/s615/0_23954987-high_res-dragons-den-s19.jpg"} alt="Jese image" />
+              <div className="relative flex w-full flex-col">
+                <div className="select-none font-semibold">
+                  {role == "user" ? "Flight Story" : "Steven Bartlett"} <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{((now.getHours() + 24) % 12) + ":" + ((now.getMinutes() < 10 ? "0" : "") + now.getMinutes()) + (now.getHours() > 10 ? " PM" : " AM")}</span>
+                </div>
+                <div className="text-message flex min-h-[20px] max-w-full flex-grow flex-col items-start gap-3 overflow-x-auto whitespace-pre-wrap break-words md:gap-3 [.text-message+&]:mt-5">{content}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+     </div>
+  );
+}
+
 function App() {
   const defaultTitle = "New Chat";
   const [currentId, setCurrentId] = useState(Number);
@@ -167,12 +190,19 @@ function App() {
       {/* Chat Window */}
       <div className="flex h-full w-full flex-col px-3 py-3.5" tabIndex={0}>
         <div className="flex h-full flex-1 flex-col p-1 md:items-center md:justify-center">
-          <div className="mb-5 inline-flex bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text pb-1 text-5xl font-medium text-transparent">Hello FlightFund Founder</div>
-          <div className="mb-5 text-5xl font-medium text-gray-400">How can I help you today?</div>
+          {conversation.length == 0 ? (
+            <div>
+              <div className="mb-5 inline-flex bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text pb-1 text-5xl font-medium text-transparent">Hello FlightFund Founder</div>
+              <div className="mb-5 text-5xl font-medium text-gray-400">How can I help you today?</div>
+            </div>
+          ) : (
+            ""
+          )}
           <ul>
             {conversation.map((message, index) => (
               <li key={index}>
-                <strong>{message.role}:</strong> {message.content}
+                <ChatBubble role={message.role} content={message.content} />
+                {/*<strong>{message.role}:</strong> {message.content}*/}
               </li>
             ))}
           </ul>
