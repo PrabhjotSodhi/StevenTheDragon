@@ -63,7 +63,7 @@ function ChatBubble({ role, content }: Message) {
           </div>
         </div>
       </div>
-     </div>
+    </div>
   );
 }
 
@@ -188,8 +188,8 @@ function App() {
         </div>
       </nav>
       {/* Chat Window */}
-      <div className="flex h-full w-full flex-col px-3 py-3.5" tabIndex={0}>
-        <div className="flex h-full flex-1 flex-col p-1 md:items-center md:justify-center">
+      <div className="flex h-full w-full flex-col overflow-hidden overflow-y-auto px-3 py-3.5" tabIndex={0}>
+        <div className={`flex flex-1 flex-col-reverse overflow-y-auto p-1 ${conversation.length == 0 ? "md:items-center md:justify-center" : ""}`}>
           {conversation.length == 0 ? (
             <div>
               <div className="mb-5 inline-flex bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text pb-1 text-5xl font-medium text-transparent">Hello FlightFund Founder</div>
@@ -213,24 +213,28 @@ function App() {
               <div className="ml-1 flex h-full justify-center gap-0 md:m-auto md:mb-4 md:w-full md:gap-2">
                 <div className="grow">
                   <div className="absolute bottom-full left-0 mb-4 flex w-full grow gap-2 px-1 pb-1 sm:px-2 sm:pb-0 md:static md:mb-0 md:max-w-none">
-                    <div className="grid w-full grid-flow-row grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-2">
-                      <div className="flex flex-col gap-2">
-                        <span>
-                          <Card title="Suggest some codenames" description="for a project introducing flexible work arrangements" />
-                        </span>
-                        <span>
-                          <Card title="How to create a pitchdeck" description="to pitch to a group of investors" />
-                        </span>
+                    {conversation.length === 0 ? (
+                      <div className="grid w-full grid-flow-row grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-2">
+                        <div className="flex flex-col gap-2">
+                          <span>
+                            <Card title="Suggest some codenames" description="for a project introducing flexible work arrangements" />
+                          </span>
+                          <span>
+                            <Card title="How to create a pitchdeck" description="to pitch to a group of investors" />
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <span style={{ opacity: "1", transform: "none" }}>
+                            <Card title="Tell me a fun fact" description="about the Roman Empire" />
+                          </span>
+                          <span>
+                            <Card title="Create a charter" description="to start a film club" />
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex flex-col gap-2">
-                        <span style={{ opacity: "1", transform: "none" }}>
-                          <Card title="Tell me a fun fact" description="about the Roman Empire" />
-                        </span>
-                        <span>
-                          <Card title="Create a charter" description="to start a film club" />
-                        </span>
-                      </div>
-                    </div>
+                    ) : (
+                      ""
+                    )}
                   </div>
                 </div>
               </div>
