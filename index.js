@@ -16,6 +16,31 @@ const assistant = await openai.beta.assistants.retrieve("asst_iaS3W54KzR8Z1GU0j2
 
 //console.log(run);
 
+app.post('/create', async (req, res) => {
+  try {
+    const thread = await openai.beta.threads.create();
+    res.json({ threadId: thread.id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create thread' });
+  }
+});
+
+app.post('/steven', async (req, res) => {
+  const { threadId, message } = req.body;
+  try {
+    const addMessage = await openai.beta.threads.messages.create(threadId, message);
+    const run = await openai.beta.threads.runs.create(threadId, {assistant_id: assistant.id, instructions: "Address the user as FlightFund founder"});
+    const status = await openai.beta.threads.run(threadId, run.id);
+    const response = await openai.beta.threads.messages.list(threadId);
+    console.log(response.body.data.slice(-1));
+    res.json({ message: response.body.data.slice(-1) });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to add message to thread' });
+  }
+});
+
 let prompt = '';
 
 app.use(bodyParser.json());
