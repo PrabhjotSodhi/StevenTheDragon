@@ -9,12 +9,23 @@ const app = express();
 const port = 3000;
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
 
+let prompt = '';
+
+app.use(bodyParser.json());
+app.use(cors());
+
 const assistant = await openai.beta.assistants.retrieve("asst_iaS3W54KzR8Z1GU0j2eNXRng");
 //const thread = await openai.beta.threads.create();
 //const message = await openai.beta.threads.messages.create(thread.id, {role: "user", content: "Hi what is your name?"});
 //const run = await openai.beta.threads.runs.create(thread.id, {assistant_id: assistant.id, instructions: "Address the user as FlightFund founder"});
 
 //console.log(run);
+
+try {
+  prompt = await fs.readFile('prompt.txt', 'utf8');
+} catch (err) {
+  console.error(err);
+}
 
 app.post('/create', async (req, res) => {
   try {
@@ -26,31 +37,33 @@ app.post('/create', async (req, res) => {
   }
 });
 
+app.post('/retrieve', async (req, res) => {
+  const { threadId } = req.body;
+  try {
+    const response = await openai.beta.threads.messages.list(threadId);
+    response.body.data.forEach((message) => {
+      console.log(message.content);
+    });
+    res.json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to retrieve messages' });
+  }
+});
+
 app.post('/steven', async (req, res) => {
   const { threadId, message } = req.body;
   try {
     const addMessage = await openai.beta.threads.messages.create(threadId, message);
-    const run = await openai.beta.threads.runs.create(threadId, {assistant_id: assistant.id, instructions: "Address the user as FlightFund founder"});
-    const status = await openai.beta.threads.run(threadId, run.id);
+    const run = await openai.beta.threads.runs.create(threadId, {assistant_id: assistant.id});
+    const status = await openai.beta.threads.runs.retrieve(threadId, run.id);
     const response = await openai.beta.threads.messages.list(threadId);
-    console.log(response.body.data.slice(-1));
-    res.json({ message: response.body.data.slice(-1) });
+    res.json({ message: response.body.data[response.body.data.length - 1].content });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to add message to thread' });
   }
 });
-
-let prompt = '';
-
-app.use(bodyParser.json());
-app.use(cors());
-
-try {
-  prompt = await fs.readFile('prompt.txt', 'utf8');
-} catch (err) {
-  console.error(err);
-}
 
 app.post('/', async (req, res) => {
   const { messages } = req.body
