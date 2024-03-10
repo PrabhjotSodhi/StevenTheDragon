@@ -76,25 +76,28 @@ function App() {
   const [conversation, setConversation] = useState<Message[]>([]);
   const [session, setSession] = useState<Session[]>(getSessionStorage());
 
-  const createNewChat = () => {
+  const createNewChat = async () => {
+    const response = await fetch("http://localhost:3000/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({}),
+    });
+    if (!response.ok) {
+      console.error(response.statusText);
+    }
+    const thread = await response.json();
+    console.log(thread.threadId);
+
     setSession((prevSession) => {
-      if (prevSession.length === 0) {
-        setCurrentId(1);
-        return [
-          {
-            id: 1,
-            title: defaultTitle,
-            conversation: [],
-          },
-        ];
-      }
-      return [...prevSession, { id: prevSession.length + 1, title: defaultTitle, conversation: [] }];
+      return [...prevSession, { id: thread.threadId, title: defaultTitle, conversation: [] }];
     });
     setMessage("");
     setResponse("");
     setTitle(defaultTitle);
     setConversation([]);
-    setCurrentId(session.length + 1);
+    setCurrentId(thread.threadId);
   };
 
   useEffect(() => {

@@ -15,11 +15,6 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const assistant = await openai.beta.assistants.retrieve("asst_iaS3W54KzR8Z1GU0j2eNXRng");
-//const thread = await openai.beta.threads.create();
-//const message = await openai.beta.threads.messages.create(thread.id, {role: "user", content: "Hi what is your name?"});
-//const run = await openai.beta.threads.runs.create(thread.id, {assistant_id: assistant.id, instructions: "Address the user as FlightFund founder"});
-
-//console.log(run);
 
 try {
   prompt = await fs.readFile('prompt.txt', 'utf8');
