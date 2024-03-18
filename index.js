@@ -52,9 +52,25 @@ app.post('/steven', async (req, res) => {
   try {
     const addMessage = await openai.beta.threads.messages.create(threadId, message);
     const run = await openai.beta.threads.runs.create(threadId, {assistant_id: assistant.id});
-    const status = await openai.beta.threads.runs.retrieve(threadId, run.id);
-    const response = await openai.beta.threads.messages.list(threadId);
-    res.json({ message: response.body.data[response.body.data.length - 1].content });
+
+    let status = await openai.beta.threads.runs.retrieve(threadId, run.id);
+    while (status.status !== "completed") {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      status = await openai.beta.threads.runs.retrieve(threadId, run.id);
+    }
+
+    if(["failed", "cancelled", "expired"].includes(status.status)) {
+      console.error(status.status.status)
+      res.status(500).json({ error: status.status.status });
+    }
+
+    const messages = await openai.beta.threads.messages.list(threadId);
+    const response = messages.data.filter((message) => message.run_id === run.id && message.role === "assistant").pop();
+
+    if (response) {
+      console.log(response);
+      res.json({ message: response.content[0].text.value });
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to add message to thread' });

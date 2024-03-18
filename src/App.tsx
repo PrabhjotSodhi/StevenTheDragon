@@ -70,10 +70,10 @@ function ChatBubble({ role, content }: Message) {
         <div className="text w-full text-gray-100">
           <div className="m-auto justify-center px-4 py-2 text-base md:gap-6">
             <div className="mx-auto flex flex-1 gap-3 text-base md:max-w-3xl md:px-5 lg:max-w-[40rem] lg:px-1 xl:max-w-[48rem] xl:px-5">
-              <img className="h-12 w-12 rounded-full object-cover" src={role == "user" ? "https://media.licdn.com/dms/image/D560BAQFRLSRnl2VI9g/company-logo_200_200/0/1680703679855/flightstory_logo?e=2147483647&v=beta&t=Jbe6gCZIwy3rctDwmDMlMri0LW8lsIpSFr0Lxww-xBY" : "https://i2-prod.walesonline.co.uk/incoming/article22597639.ece/ALTERNATES/s615/0_23954987-high_res-dragons-den-s19.jpg"} />
+              <img className="h-12 w-12 rounded-full object-cover" src={role == "user" ? "https://media.licdn.com/dms/image/D4E0BAQGUS0T9L2YxZg/company-logo_200_200/0/1707737879244/flightfund_logo?e=2147483647&v=beta&t=ATxoMYBFCP4R_WRtzHflPA_10ZsSylSs7nEOKIxMct4" : "https://i2-prod.walesonline.co.uk/incoming/article22597639.ece/ALTERNATES/s615/0_23954987-high_res-dragons-den-s19.jpg"} />
               <div className="relative flex w-full flex-col">
                 <div className="select-none font-semibold">
-                  {role == "user" ? "Flight Story" : "Steven Bartlett"} <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{((now.getHours() + 24) % 12) + ":" + ((now.getMinutes() < 10 ? "0" : "") + now.getMinutes()) + (now.getHours() > 10 ? " PM" : " AM")}</span>
+                  {role == "user" ? "Flight Fund" : "Steven The Dragon"} <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{((now.getHours() + 24) % 12) + ":" + ((now.getMinutes() < 10 ? "0" : "") + now.getMinutes()) + (now.getHours() > 10 ? " PM" : " AM")}</span>
                 </div>
                 <div className="text-message flex min-h-[20px] max-w-full flex-grow flex-col items-start gap-3 overflow-x-auto whitespace-pre-wrap break-words md:gap-3 [.text-message+&]:mt-5">{content}</div>
                 <div className="mt-1 flex justify-start gap-3 empty:hidden">
@@ -178,27 +178,32 @@ function App() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (session.length === 0) {
       createNewChat();
     }
-    const newMessage: Message = { role: "user", content: message };
-    setConversation([...conversation, newMessage]);
-    fetch("http://localhost:3000/", {
+    setConversation([...conversation, { role: "user", content: message }]);
+    const response = await fetch("http://localhost:3000/steven", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ messages: [...conversation, newMessage] }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setResponse(data.message);
-        setConversation([...conversation, newMessage, { role: "assistant", content: data.message }]);
-      });
-    useDebugValue(conversation);
-    useDebugValue(session);
+      body: JSON.stringify({
+        threadId: currentId,
+        message: { role: "user", content: message },
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(response);
+    }
+
+    const data = await response.json();
+    console.log(data.message);
+
+    setResponse(data.message);
+    setConversation([...conversation, { role: "user", content: message }, { role: "assistant", content: data.message }]);
   };
 
   return (
@@ -275,14 +280,7 @@ function App() {
               </div>
               <div className="relative flex h-full flex-1 items-stretch md:flex-col">
                 <div className="flex w-full items-center">
-                  <button className="absolute bottom-1 left-1 justify-center rounded-lg p-2 text-gray-400 hover:bg-gray-600 hover:text-white md:bottom-2 md:left-2">
-                    <svg className="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                      <path fill="currentColor" d="M13 5.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0ZM7.565 7.423 4.5 14h11.518l-2.516-3.71L11 13 7.565 7.423Z" />
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 1H2a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z" />
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0ZM7.565 7.423 4.5 14h11.518l-2.516-3.71L11 13 7.565 7.423Z" />
-                    </svg>
-                  </button>
-                  <textarea id="prompt-textarea" value={message} onChange={(e) => setMessage(e.target.value)} data-id="root" rows={1} placeholder="Message StevenTheDragon..." className="max-h-25 m-0 w-full resize-none rounded-lg bg-transparent py-[10px] pl-10 pr-10 placeholder-white/50 focus:ring-0 focus-visible:ring-0 md:py-3.5 md:pl-[55px] md:pr-12"></textarea>
+                  <textarea id="prompt-textarea" value={message} onChange={(e) => setMessage(e.target.value)} data-id="root" rows={1} placeholder="Message StevenTheDragon..." className="max-h-25 m-0 w-full resize-none rounded-lg bg-transparent py-[10px] pr-10 placeholder-white/50 focus:ring-0 focus-visible:ring-0 md:py-3.5 md:pr-12"></textarea>
                   <button type="submit" className="absolute bottom-1 right-1 inline-flex cursor-pointer justify-center rounded-full p-2 text-gray-400 hover:bg-gray-600 hover:text-white md:bottom-2 md:right-2">
                     <svg className="h-5 w-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
                       <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
@@ -293,7 +291,7 @@ function App() {
             </div>
           </form>
           <div className="relative px-2 py-2 text-center text-xs text-gray-300 md:px-[60px]">
-            <span>I hope you are not using this, but if you are, don't tell Steven</span>
+            <span>I hope nobody’s using this, but if you are, please keep this from Steven</span>
           </div>
         </div>
       </div>
