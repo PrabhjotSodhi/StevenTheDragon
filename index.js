@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import OpenAI from "openai";
+import fetch from 'node-fetch';
 import 'dotenv/config'
 
 const app = express();
@@ -60,7 +61,24 @@ app.post('/steven', async (req, res) => {
   }
 });
 
-app.post('/', async (req, res) => {
+app.post('/voice', async (req, res) => {
+  const { message } = req.body;
+  try {
+    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${process.env.ELEVENLABS_VOICE_ID}/stream`, {
+      method: 'POST',
+      headers: {'xi-api-key': process.env.ELEVENLABS_API_KEY, 'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        "text": message,
+      })
+    });
+    response.body.pipe(res);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to retrieve voice' });
+  }
+});
+
+app.post('/old', async (req, res) => {
   const { messages } = req.body
   const completion = await openai.chat.completions.create({
     messages: [{ role: "system", content: prompt }, ...messages],
