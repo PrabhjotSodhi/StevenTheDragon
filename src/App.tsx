@@ -307,7 +307,7 @@ function App() {
                       />
                     </svg>
                     <span className="sr-only">Loading...</span>
-                    <p className="align-middle text-gray-300">{law}</p>
+                    <p className="align-middle italic text-gray-300">{law}</p>
                   </div>
                 }
               />
