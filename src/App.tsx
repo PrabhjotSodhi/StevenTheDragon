@@ -1,4 +1,4 @@
-import { useDebugValue, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface CardProps {
   title: string;
@@ -6,7 +6,7 @@ interface CardProps {
 }
 type Message = {
   role: "user" | "assistant";
-  content: string;
+  content: React.ReactNode | string;
 };
 
 type Session = {
@@ -14,6 +14,42 @@ type Session = {
   title: string;
   conversation: Message[];
 };
+
+const lawList = [
+  "Law 1: Fill your five buckets in the right order",
+  "Law 2: To master it, you must create an obligation to teach it",
+  "Law 3: You must never disagree",
+  "Law 4: You do not get to choose what you believe",
+  "Law 5: You must lean in to bizarre behaviour",
+  "Law 6: Ask, don't tell - the question/behaviour effect",
+  "Law 7: Never compromise your self-story",
+  "Law 8: Never fight a bad habit",
+  "Law 9: Always prioritise your first foundation",
+  "Law 10: Useless absurdity will define you more than useful practicalities",
+  "Law 11: Avoid wallpaper at all costs",
+  "Law 12: You must piss people off",
+  "Law 13: Shoot your psychological moonshots first",
+  "Law 14: Friction can create value",
+  "Law 15: The frame matters more than the picture",
+  "Law 16: Use Goldilocks to your advantage",
+  "Law 17: Let them try and they will buy",
+  "Law 18: Fight for the first five seconds",
+  "Law 19: You must sweat the small stuff",
+  "Law 20: A small miss now creates a big miss later",
+  "Law 21: You must out-fail the competition",
+  "Law 22: You must become a Plan-A thinker",
+  "Law 23: Don't be an ostrich",
+  "Law 24: You must make pressure your privilege",
+  "Law 25: The power of negative manifestation",
+  "Law 26: Your skills are worthless, but your context is valuable",
+  "Law 27: The discipline equation: death, time and discipline!",
+  "Law 28: Ask who not how",
+  "Law 29: Create a cult mentality",
+  "Law 30: The three bars for building great teams",
+  "Law 31: Leverage the power of progress",
+  "Law 32: You must be an inconsistent leader",
+  "Law 33: Learning never ends",
+];
 
 function getSessionStorage(defaultValue: Session[] = []) {
   const session = window.sessionStorage.getItem("session");
@@ -107,6 +143,8 @@ function App() {
   const [response, setResponse] = useState("");
   const [conversation, setConversation] = useState<Message[]>([]);
   const [session, setSession] = useState<Session[]>(getSessionStorage());
+  const [isLoading, setIsLoading] = useState(false);
+  const [law, setLaw] = useState(lawList[Math.floor(Math.random() * lawList.length)]);
 
   const createNewChat = async () => {
     const response = await fetch("http://localhost:3000/create", {
@@ -164,6 +202,15 @@ function App() {
     window.sessionStorage.setItem("session", JSON.stringify(session));
   }, [session]);
 
+  useEffect(() => {
+    if (isLoading) {
+      const interval = setInterval(() => {
+        setLaw(lawList[Math.floor(Math.random() * lawList.length)]);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [isLoading]);
+
   const handleTitle = (id: number) => {
     const findSession = session.find((session) => session.id === id);
     if (findSession) {
@@ -180,10 +227,12 @@ function App() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (session.length === 0) {
+    if (currentId === 0) {
       createNewChat();
     }
     setConversation([...conversation, { role: "user", content: message }]);
+    setIsLoading(true);
+
     const response = await fetch("http://localhost:3000/steven", {
       method: "POST",
       headers: {
@@ -201,7 +250,7 @@ function App() {
 
     const data = await response.json();
     console.log(data.message);
-
+    setIsLoading(false);
     setResponse(data.message);
     setConversation([...conversation, { role: "user", content: message }, { role: "assistant", content: data.message }]);
   };
@@ -245,6 +294,24 @@ function App() {
                 {/*<strong>{message.role}:</strong> {message.content}*/}
               </li>
             ))}
+            {isLoading ? (
+              <ChatBubble
+                role="assistant"
+                content={
+                  <div role="status" className="flex flex-row flex-nowrap justify-center gap-2 overflow-hidden align-middle">
+                    <svg aria-hidden="true" className="h-8 w-8 animate-spin fill-blue-600 text-gray-200 dark:text-gray-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                      <path
+                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                        fill="currentFill"
+                      />
+                    </svg>
+                    <span className="sr-only">Loading...</span>
+                    <p className="align-middle text-gray-300">{law}</p>
+                  </div>
+                }
+              />
+            ) : null}
           </ul>
         </div>
         <div className="w-full border-white/20 pt-2 md:w-[calc(100%-.5rem)] md:border-transparent md:pt-0">
