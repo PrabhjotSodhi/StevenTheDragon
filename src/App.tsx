@@ -145,6 +145,7 @@ function App() {
   const [session, setSession] = useState<Session[]>(getSessionStorage());
   const [isLoading, setIsLoading] = useState(false);
   const [law, setLaw] = useState(lawList[Math.floor(Math.random() * lawList.length)]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const createNewChat = async () => {
     const response = await fetch("http://localhost:3000/create", {
@@ -258,8 +259,19 @@ function App() {
   return (
     <div className="flex h-full w-full overflow-hidden">
       {/* Side bar */}
-      <nav className="hidden w-[260px] flex-col justify-between overflow-x-hidden bg-neutral-900 px-3 py-3.5 sm:flex" aria-history="Chat History">
-        <button onClick={createNewChat} className="btn btn-neutral group relative w-full whitespace-nowrap rounded-xl border-2 border-neutral-950 px-4 py-3 text-sm text-gray-100 md:whitespace-normal">
+      <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="btn color-white bg-color-white absolute left-4 top-4 z-50 sm:hidden">
+        {isSidebarOpen ? (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="icon-md">
+            <path d="M6.34315 6.34338L17.6569 17.6571M17.6569 6.34338L6.34315 17.6571" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        ) : (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M3 8C3 7.44772 3.44772 7 4 7H20C20.5523 7 21 7.44772 21 8C21 8.55228 20.5523 9 20 9H4C3.44772 9 3 8.55228 3 8ZM3 16C3 15.4477 3.44772 15 4 15H14C14.5523 15 15 15.4477 15 16C15 16.5523 14.5523 17 14 17H4C3.44772 17 3 16.5523 3 16Z" fill="currentColor"></path>
+          </svg>
+        )}
+      </button>
+      <nav className={`${isSidebarOpen ? "visible" : "hidden"} absolute z-20 h-full w-full flex-col justify-between overflow-x-hidden bg-neutral-900 px-3 py-3.5 sm:static sm:flex sm:w-[260px]`} aria-history="Chat History">
+        <button onClick={createNewChat} className="btn btn-neutral group relative mt-10 w-full whitespace-nowrap rounded-xl border-2 border-neutral-950 px-4 py-3 text-sm text-gray-100 sm:mt-0 md:whitespace-normal">
           + New Chat
         </button>
         <ul className="flex h-full flex-col gap-2 overflow-y-auto py-4 text-sm text-gray-100">
@@ -278,7 +290,7 @@ function App() {
       </nav>
       {/* Chat Window */}
       <div className="flex h-full w-full flex-col overflow-hidden overflow-y-auto px-3 py-3.5" tabIndex={0}>
-        <div className={`flex flex-1 flex-col-reverse overflow-y-auto p-1 ${conversation.length == 0 ? "md:items-center md:justify-center" : ""}`}>
+        <div className={`flex flex-1 flex-col-reverse overflow-y-auto p-1 ${conversation.length == 0 ? "mt-10 justify-end md:mt-0 md:items-center md:justify-center" : ""}`}>
           {conversation.length == 0 ? (
             <div>
               <div className="mb-5 inline-flex bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text pb-1 text-5xl font-medium text-transparent">Hello FlightFund Founder</div>
@@ -315,7 +327,7 @@ function App() {
           </ul>
         </div>
         <div className="w-full border-white/20 pt-2 md:w-[calc(100%-.5rem)] md:border-transparent md:pt-0">
-          <form onSubmit={handleSubmit} className="stretch mx-2 flex w-full flex-row items-center gap-3 rounded-lg px-3 py-2 last:mb-2 md:mx-4 md:last:mb-6 lg:mx-auto lg:max-w-2xl xl:max-w-3xl">
+          <form onSubmit={handleSubmit} className="stretch mx-2 flex w-full flex-row items-center gap-3 rounded-lg py-2 pr-3 last:mb-2 md:mx-4 md:last:mb-6 lg:mx-auto lg:max-w-2xl xl:max-w-3xl">
             <div className="relative flex h-full flex-1 items-stretch md:flex-col">
               <div className="ml-1 flex h-full justify-center gap-0 md:m-auto md:mb-4 md:w-full md:gap-2">
                 <div className="grow">
@@ -324,18 +336,18 @@ function App() {
                       <div className="grid w-full grid-flow-row grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-2">
                         <div className="flex flex-col gap-2">
                           <span>
-                            <Card title="Suggest some codenames" description="for a project introducing flexible work arrangements" />
+                            <Card title="Help me market my product" description="to become a thought leader in a red ocean" />
                           </span>
                           <span>
-                            <Card title="How to create a pitchdeck" description="to pitch to a group of investors" />
+                            <Card title="How to create a pitch deck" description="to pitch to a group of investors" />
                           </span>
                         </div>
                         <div className="flex flex-col gap-2">
-                          <span style={{ opacity: "1", transform: "none" }}>
-                            <Card title="Tell me a fun fact" description="about the Roman Empire" />
+                          <span>
+                            <Card title="Give me entrepreneurial advice" description="on how I can become successful" />
                           </span>
                           <span>
-                            <Card title="Create a charter" description="to start a film club" />
+                            <Card title="Opportunities for entrepreneurs" description="that I could capitalize on" />
                           </span>
                         </div>
                       </div>
