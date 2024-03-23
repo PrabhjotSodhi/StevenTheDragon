@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 interface CardProps {
   title: string;
   description: string;
+  setMessage: (message: string) => void;
+  prompt: string;
 }
 type Message = {
   role: "user" | "assistant";
@@ -56,9 +58,9 @@ function getSessionStorage(defaultValue: Session[] = []) {
   return session ? JSON.parse(session) : defaultValue;
 }
 
-function Card({ title, description }: CardProps) {
+function Card({ title, description, setMessage, prompt }: CardProps) {
   return (
-    <button className="btn btn-neutral group relative w-full whitespace-nowrap rounded-xl px-4 py-3 text-left text-gray-100 md:whitespace-normal">
+    <button onClick={() => setMessage(prompt)} className="btn btn-neutral group relative w-full whitespace-nowrap rounded-xl px-4 py-3 text-left text-gray-100 md:whitespace-normal">
       <div className="flex w-full items-center justify-center gap-2">
         <div className="flex w-full items-center justify-between">
           <div className="flex flex-col overflow-hidden">
@@ -69,7 +71,7 @@ function Card({ title, description }: CardProps) {
             <span className="" data-state="closed">
               <div className="color-white shadow-xxs rounded-lg p-1 dark:shadow-none">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="icon-sm text-gray-100">
-                  <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
                 </svg>
               </div>
             </span>
@@ -285,7 +287,12 @@ function App() {
             ))}
         </ul>
         <div className="flex w-full flex-col items-center border-t-2 pt-4">
-          <p>Made by Prabhjot Sodhi</p>
+          <p>
+            Made by{" "}
+            <a href="https://www.linkedin.com/in/prabhjotsodhi/" target="_blank" rel="noopener noreferrer">
+              Prabhjot Sodhi
+            </a>
+          </p>
         </div>
       </nav>
       {/* Chat Window */}
@@ -336,18 +343,82 @@ function App() {
                       <div className="grid w-full grid-flow-row grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-2">
                         <div className="flex flex-col gap-2">
                           <span>
-                            <Card title="Help me market my product" description="to become a thought leader in a red ocean" />
+                            <Card
+                              title="Help me market my product"
+                              description="to become a thought leader in a red ocean"
+                              setMessage={setMessage}
+                              prompt="Act as a seasoned marketing strategist with a specialization in differentiation and thought leadership. My product, operates in a highly competitive market, often referred to as a red ocean, where it faces intense competition and commoditization threats. Start by asking my product's name and unique value proposition is and the size of the company (startup, mid-sized, large corporation).
+
+Given this scenario, I'm seeking comprehensive strategies to differentiate my product and position myself as a thought leader in this sector. This should involve a multi-faceted approach covering, but not limited to:
+
+In-depth Competitive Analysis: Identify key areas where competitors are lacking and how My product can fill this void or outperform on these dimensions.
+Content Strategy: Develop a content strategy that not only highlights the unique value of My product but also establishes our voice as an authority in the industry. This includes types of content (e.g., blogs, white papers, videos), potential topics that resonate with our target audience, and platforms for distribution.
+Community Engagement and Thought Leadership: Suggestions on how to engage with industry communities (online forums, social media groups, professional associations) and position My product as a frontrunner through thought leadership (e.g., speaking engagements, webinars, roundtable discussions).
+Innovative Marketing Tactics: Unconventional and innovative marketing tactics that can make My product stand out in a crowded market. This could involve guerrilla marketing, leveraging emerging technologies, or unique partnerships.
+Metrics for Success: Key performance indicators (KPIs) and metrics to monitor the effectiveness of these strategies and adjust course as necessary.
+Please provide a detailed action plan that incorporates these elements, ensuring that the advice is practical, feasible for my company size, and aligned with current market trends and consumer behavior"
+                            />
                           </span>
                           <span>
-                            <Card title="How to create a pitch deck" description="to pitch to a group of investors" />
+                            <Card
+                              title="How to create a pitch deck"
+                              description="to pitch to a group of investors"
+                              setMessage={setMessage}
+                              prompt="Act as a seasoned entrepreneur and presentation coach with extensive experience in crafting compelling pitch decks for startups seeking investment. Begin by asking me to provide detailed information about several key aspects of my business and the vision behind it. Specifically, request the following details to tailor the pitch deck advice accurately:
+
+Business Overview: Briefly describe the core product or service your startup offers. What problem does it solve, and why is it unique in the marketplace? [Business_Overview]
+
+Target Market: Who are your ideal customers? Provide insights into your target market's size, demographics, and psychographics. [Target_Market]
+
+Revenue Model: How does your business make money? Describe your primary revenue streams, including any subscription models, product sales, or services. [Revenue_Model]
+
+Competition Analysis: Who are your main competitors, and how does your offering outperform them? Highlight your competitive edge. [Competition]
+
+Marketing and Sales Strategy: Outline your strategies for customer acquisition and retention. Mention any partnerships, channels, or tactics you plan to use. [Marketing_Sales_Strategy]
+
+Financial Projections: Share any available financial projections or key financial metrics that highlight your business's potential growth and profitability over the next 3-5 years. [Financial_Projections]
+
+Funding Needs: Specify how much funding you are seeking and how you plan to allocate these funds to scale your business. [Funding_Needs]
+
+Team: Introduce your team, highlighting key members' expertise and roles in driving the business forward. [Team]
+
+Vision and Future Plans: What is the long-term vision for your company, and what are the key milestones you aim to achieve in the next few years? [Vision_Future_Plans]
+
+Based on the information provided in these sections, craft a comprehensive guide to creating a pitch deck that would resonate with investors. Include tips on structuring the presentation, designing slides for maximum impact, and delivering the pitch with confidence. Additionally, suggest any tools or software that might help in creating a professional and engaging pitch deck. Finally, offer advice on handling questions and feedback from investors during the pitch session."
+                            />
                           </span>
                         </div>
                         <div className="flex flex-col gap-2">
                           <span>
-                            <Card title="Give me entrepreneurial advice" description="on how I can become successful" />
+                            <Card
+                              title="Give me entrepreneurial advice"
+                              description="on how I can become successful"
+                              setMessage={setMessage}
+                              prompt="Act as a seasoned entrepreneur with extensive experience across multiple successful startups. Drawing from your vast knowledge and the lessons you've learned along the way, provide detailed entrepreneurial advice for someone who is eager to embark on their entrepreneurial journey and achieve success. Focus on the following areas:
+
+Innovation and Differentiation: How can I identify unique business opportunities and differentiate my offerings in a crowded market?
+Market Understanding: What strategies can I employ to gain a deep understanding of my target market and ensure that my product or service meets their needs?
+Resilience and Adaptability: Share insights on developing resilience in the face of setbacks and adaptability in a rapidly changing business environment.
+Strategic Planning: Offer guidance on creating a robust business plan that aligns with my long-term vision while being flexible enough to adapt to unexpected challenges.
+Networking and Mentorship: Explain the importance of building a strong network and finding mentors, and how these relationships can impact my entrepreneurial journey.
+Personal Development: Highlight the skills and mindsets that are crucial for an entrepreneur to develop, including leadership, time management, and continuous learning.
+Please provide actionable advice, examples, and any relevant frameworks or tools that can help me navigate these areas effectively. Your insights should aim to equip me with a comprehensive understanding of what it takes to build a successful business from the ground up, ensuring that I'm well-prepared to face the challenges and opportunities of entrepreneurship."
+                            />
                           </span>
                           <span>
-                            <Card title="Opportunities for entrepreneurs" description="that I could capitalize on" />
+                            <Card
+                              title="Opportunities for entrepreneurs"
+                              description="that I could capitalize on"
+                              setMessage={setMessage}
+                              prompt="Act as a forward-thinking business analyst with a deep understanding of current economic trends, technological advancements, and consumer behaviors. Considering the landscape of 2024, identify and assess recent opportunities for entrepreneurs that are ripe for innovation and growth. Focus on sectors that show high potential due to changes in technology, societal needs, or market gaps. Please provide a comprehensive overview of each opportunity, including the following elements:
+
+Market Need: What specific need does this opportunity address, and why is it relevant now?
+Technological Enablers: Are there any recent technological developments or trends that make this opportunity feasible or particularly attractive at this moment?
+Target Audience: Who is the primary target audience for this opportunity, and what are their characteristics or behaviors that align with this opportunity?
+Competitive Landscape: Briefly describe the current competitive landscape and why there's room for a new entrant.
+First Steps for Entrepreneurs: What initial steps should entrepreneurs consider taking to best capitalize on this opportunity?
+Please provide insights into at least three distinct opportunities, ensuring a diverse range of industries or sectors is covered to suit different types of entrepreneurial interests and backgrounds. Tailor your analysis to technology and AI if applicable, ensuring that the advice is personalized and directly actionable."
+                            />
                           </span>
                         </div>
                       </div>
