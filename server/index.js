@@ -17,12 +17,6 @@ app.use(cors());
 
 const assistant = await openai.beta.assistants.retrieve("asst_iaS3W54KzR8Z1GU0j2eNXRng");
 
-try {
-  prompt = await fs.readFile('prompt.txt', 'utf8');
-} catch (err) {
-  console.error(err);
-}
-
 app.post('/create', async (req, res) => {
   try {
     const thread = await openai.beta.threads.create();
@@ -94,34 +88,6 @@ app.post('/voice', async (req, res) => {
   }
 });
 
-app.post('/old', async (req, res) => {
-  const { messages } = req.body
-  const completion = await openai.chat.completions.create({
-    messages: [{ role: "system", content: prompt }, ...messages],
-    model: "gpt-3.5-turbo",
-    max_tokens: 128,
-    temperature: 0.7,
-  });
-  console.log(completion.choices[0]);
-  if(completion.choices[0].message.content) {
-    res.json({message: completion.choices[0].message.content})
-  }
-});
-
-app.post('/title', async (req, res) => {
-  const { messages } = req.body
-  const completion = await openai.chat.completions.create({
-    messages: [{ role: "system", content: "Write an title under 5 words for this conversation" },messages],
-    model: "gpt-3.5-turbo",
-    max_tokens: 10,
-    temperature: 0,
-  });
-  console.log(completion.choices[0]);
-  if(completion.choices[0].message.content) {
-    res.json({message: completion.choices[0].message.content})
-  }
-});
-
 app.use("/", (req, res) => {
   res.send("Server is running");
 })
@@ -129,5 +95,3 @@ app.use("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
-module.exports = app;
