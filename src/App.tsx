@@ -87,7 +87,7 @@ function ChatBubble({ role, content }: Message) {
   const [audio] = useState(new Audio());
 
   const playAudio = () => {
-    fetch("https://steven-the-dragon-server.vercel.app/voice", {
+    fetch("https://steventhedragon.onrender.com/voice", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -150,7 +150,7 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const createNewChat = async () => {
-    const response = await fetch("https://steven-the-dragon-server.vercel.app/create", {
+    const response = await fetch("https://steventhedragon.onrender.com/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -236,7 +236,7 @@ function App() {
     setConversation([...conversation, { role: "user", content: message }]);
     setIsLoading(true);
 
-    const response = await fetch("https://steven-the-dragon-server.vercel.app/steven", {
+    const response = await fetch("https://steventhedragon.onrender.com/steven", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
