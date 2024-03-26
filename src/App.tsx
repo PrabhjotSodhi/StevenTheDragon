@@ -289,7 +289,7 @@ function App() {
         <div className="flex w-full flex-col items-center border-t-2 pt-4">
           <p>
             Made by{" "}
-            <a href="https://www.linkedin.com/in/prabhjotsodhi/" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/PrabhjotSodhi/StevenTheDragon" target="_blank" rel="noopener noreferrer">
               Prabhjot Sodhi
             </a>
           </p>
