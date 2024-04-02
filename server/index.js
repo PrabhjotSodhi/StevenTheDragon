@@ -79,6 +79,7 @@ app.post('/voice', async (req, res) => {
       headers: {'xi-api-key': process.env.ELEVENLABS_API_KEY, 'Content-Type': 'application/json'},
       body: JSON.stringify({
         "text": message,
+        "model_id": "eleven_turbo_v2"
       })
     });
     response.body.pipe(res);
