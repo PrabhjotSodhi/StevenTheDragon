@@ -377,7 +377,7 @@ function App() {
                               title="Help me market my product"
                               description="to become a thought leader in a red ocean"
                               setMessage={setMessage}
-                              prompt="Act as a seasoned marketing strategist with a specialization in differentiation and thought leadership. My product, operates in a highly competitive market, often referred to as a red ocean, where it faces intense competition and commoditization threats. Start by asking my product's name and unique value proposition is and the size of the company (startup, mid-sized, large corporation).
+                              prompt="My product, operates in a highly competitive market, often referred to as a red ocean, where it faces intense competition and commoditization threats. Start by asking my product's name and unique value proposition is and the size of the company (startup, mid-sized, large corporation).
 
 Given this scenario, I'm seeking comprehensive strategies to differentiate my product and position myself as a thought leader in this sector. This should involve a multi-faceted approach covering, but not limited to:
 
@@ -394,7 +394,7 @@ Please provide a detailed action plan that incorporates these elements, ensuring
                               title="How to create a pitch deck"
                               description="to pitch to a group of investors"
                               setMessage={setMessage}
-                              prompt="Act as a seasoned entrepreneur and presentation coach with extensive experience in crafting compelling pitch decks for startups seeking investment. Begin by asking me to provide detailed information about several key aspects of my business and the vision behind it. Specifically, request the following details to tailor the pitch deck advice accurately:
+                              prompt="Begin by asking me to provide detailed information about several key aspects of my business and the vision behind it. Specifically, request the following details to tailor the pitch deck advice accurately:
 
 Business Overview: Briefly describe the core product or service your startup offers. What problem does it solve, and why is it unique in the marketplace? [Business_Overview]
 
@@ -424,7 +424,7 @@ Based on the information provided in these sections, craft a comprehensive guide
                               title="Give me entrepreneurial advice"
                               description="on how I can become successful"
                               setMessage={setMessage}
-                              prompt="Act as a seasoned entrepreneur with extensive experience across multiple successful startups. Drawing from your vast knowledge and the lessons you've learned along the way, provide detailed entrepreneurial advice for someone who is eager to embark on their entrepreneurial journey and achieve success. Focus on the following areas:
+                              prompt="Drawing from your vast knowledge and the lessons you've learned along the way, provide detailed entrepreneurial advice for someone who is eager to embark on their entrepreneurial journey and achieve success. Focus on the following areas:
 
 Innovation and Differentiation: How can I identify unique business opportunities and differentiate my offerings in a crowded market?
 Market Understanding: What strategies can I employ to gain a deep understanding of my target market and ensure that my product or service meets their needs?
@@ -440,7 +440,7 @@ Please provide actionable advice, examples, and any relevant frameworks or tools
                               title="Opportunities for entrepreneurs"
                               description="that I could capitalize on"
                               setMessage={setMessage}
-                              prompt="Act as a forward-thinking business analyst with a deep understanding of current economic trends, technological advancements, and consumer behaviors. Considering the landscape of 2024, identify and assess recent opportunities for entrepreneurs that are ripe for innovation and growth. Focus on sectors that show high potential due to changes in technology, societal needs, or market gaps. Please provide a comprehensive overview of each opportunity, including the following elements:
+                              prompt="Considering the landscape of 2024, identify and assess recent opportunities for entrepreneurs that are ripe for innovation and growth. Focus on sectors that show high potential due to changes in technology, societal needs, or market gaps. Please provide a comprehensive overview of each opportunity, including the following elements:
 
 Market Need: What specific need does this opportunity address, and why is it relevant now?
 Technological Enablers: Are there any recent technological developments or trends that make this opportunity feasible or particularly attractive at this moment?
