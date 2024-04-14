@@ -17,7 +17,6 @@ type Session = {
   title: string;
   conversation: Message[];
 };
-type AudioDataState = Blob | null;
 
 const lawList = [
   "Law 1: Fill your five buckets in the right order",
