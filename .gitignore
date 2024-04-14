@@ -14,6 +14,7 @@ dist-ssr
 .env
 .idx/*
 .vite
+server/*.m4a
 
 # Editor directories and files
 .vscode/*

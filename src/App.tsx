@@ -91,7 +91,7 @@ function ChatBubble({ role, content }: Message) {
 
   const playAudio = () => {
     setIsVoiceLoading(true);
-    fetch("https://steventhedragon.onrender.com/voice", {
+    fetch("http://steventhedragon.onrender.com/voice", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -164,7 +164,7 @@ function App() {
 
   const createNewChat = async () => {
     setIsNewChatLoading(true);
-    const response = await fetch("https://steventhedragon.onrender.com/create", {
+    const response = await fetch("http://steventhedragon.onrender.com/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -251,7 +251,7 @@ function App() {
     setConversation([...conversation, { role: "user", content: message }]);
     setIsLoading(true);
 
-    const response = await fetch("https://steventhedragon.onrender.com/steven", {
+    const response = await fetch("http://steventhedragon.onrender.com/steven", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -278,34 +278,37 @@ function App() {
       console.error("No audio data to send");
       return;
     }
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      if (reader.result) {
-        const base64Audio = (reader.result as string).split(",")[1];
-        const response = await fetch("https://steventhedragon.onrender.com/whisper", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ file: base64Audio }),
-        });
-
-        if (!response.ok) {
-          console.error(response);
-          return;
+    const base64Audio = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (reader.result) {
+          resolve((reader.result as string).split(",")[1]);
+        } else {
+          reject(new Error("Failed to read audio data"));
         }
+      };
+      reader.readAsDataURL(audioData);
+    });
+    const response = await fetch("http://steventhedragon.onrender.com/whisper", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ file: base64Audio }),
+    });
 
-        const data = await response.json();
-        console.log(data.message);
-      }
-    };
+    if (!response.ok) {
+      console.error(response);
+      return;
+    }
 
-    reader.readAsDataURL(audioData);
+    const data = await response.json();
+    console.log(data.message);
   };
 
   const startRecording = async () => {
     const mediaStream = await window.navigator.mediaDevices.getUserMedia({ audio: true });
     const mediaRecorder = new MediaRecorder(mediaStream);
     mediaRecorder.ondataavailable = (event) => {
-      setAudioData(event.data); // Update the type of audioData to allow for Blob or null
+      setAudioData(event.data);
     };
     mediaRecorder.start();
     mediaRecorderRef.current = mediaRecorder;
@@ -313,8 +316,12 @@ function App() {
   };
   const stopRecording = () => {
     if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.ondataavailable = async (event) => {
+        setAudioData(event.data);
+        await sendAudioData();
+      };
       mediaRecorderRef.current.stop();
-      mediaRecorderRef.current = null; // Clear the ref after stopping the recorder
+      mediaRecorderRef.current = null;
     }
     setIsRecording(false);
   };
@@ -324,7 +331,6 @@ function App() {
       startRecording();
     } else {
       stopRecording();
-      sendAudioData();
     }
   };
 

@@ -1,9 +1,10 @@
 import express from 'express';
-import fs from 'fs/promises';
+import fs from 'fs';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import OpenAI from "openai";
 import fetch from 'node-fetch';
+import FormData from 'form-data';
 import 'dotenv/config'
 
 const app = express();
@@ -78,14 +79,24 @@ app.post('/voice', async (req, res) => {
 app.post('/whisper', async (req, res) => {
   const audioData = Buffer.from(req.body.file, 'base64');
   try {
-    const transcription  = await openai.audio.transcriptions.create({
-      file: audioData,
-      model: "whisper-1",
-      language: "en",
-      prompt: "Please transcribe this audio, including filler words and pauses.",
-      response_format: "text"
+    const file = await fs.promises.open('./audio.m4a', 'w');
+    await file.write(audioData);
+    await file.datasync();
+    await file.close();
+    const form = new FormData();
+    form.append("file", fs.createReadStream('./audio.m4a'));
+    form.append("model", "whisper-1");
+    form.append("language", "en");
+    form.append("prompt", "Please transcribe this audio, including filler words and pauses.");
+    form.append("response_format", "text");
+    const transcription  = await fetch("https://api.openai.com/v1/audio/translations", {
+      method: "POST",
+      headers: { ...form.getHeaders(), Authorization: `Bearer ${OPENAI_API_KEY}` },
+      body: form,
     });
-    res.json({ message: transcription.text });
+    const data = await transcription.text();
+    console.log(data);
+    res.json({ message: data });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred while processing the audio data.' });
