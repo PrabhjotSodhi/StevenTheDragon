@@ -278,26 +278,27 @@ function App() {
       console.error("No audio data to send");
       return;
     }
-    try {
-      const response = await fetch("https://steventhedragon.onrender.com/whisper", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: audioData,
-        }),
-      });
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      if (reader.result) {
+        const base64Audio = (reader.result as string).split(",")[1];
+        const response = await fetch("https://steventhedragon.onrender.com/whisper", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ file: base64Audio }),
+        });
 
-      if (!response.ok) {
-        console.error(response);
+        if (!response.ok) {
+          console.error(response);
+          return;
+        }
+
+        const data = await response.json();
+        console.log(data.message);
       }
+    };
 
-      const data = await response.json();
-      console.log(data.message);
-    } catch (error) {
-      console.error("Failed to send audio data:", error);
-    }
+    reader.readAsDataURL(audioData);
   };
 
   const startRecording = async () => {
@@ -313,6 +314,7 @@ function App() {
   const stopRecording = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
+      mediaRecorderRef.current = null; // Clear the ref after stopping the recorder
     }
     setIsRecording(false);
   };

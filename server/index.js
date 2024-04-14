@@ -76,10 +76,10 @@ app.post('/voice', async (req, res) => {
 });
 
 app.post('/whisper', async (req, res) => {
-  const audioData = req.body.message;
+  const audioData = Buffer.from(req.body.file, 'base64');
   try {
     const transcription  = await openai.audio.transcriptions.create({
-      file: fs.createReadStream(audioData),
+      file: audioData,
       model: "whisper-1",
       language: "en",
       prompt: "Please transcribe this audio, including filler words and pauses.",
@@ -90,7 +90,7 @@ app.post('/whisper', async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'An error occurred while processing the audio data.' });
   }
-})
+});
 
 app.use("/", (req, res) => {
   res.send("Server is running");
