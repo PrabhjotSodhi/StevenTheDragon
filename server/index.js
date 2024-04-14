@@ -27,20 +27,6 @@ app.post('/create', async (req, res) => {
   }
 });
 
-app.post('/retrieve', async (req, res) => {
-  const { threadId } = req.body;
-  try {
-    const response = await openai.beta.threads.messages.list(threadId);
-    response.body.data.forEach((message) => {
-      console.log(message.content);
-    });
-    res.json(response);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to retrieve messages' });
-  }
-});
-
 app.post('/steven', async (req, res) => {
   const { threadId, message } = req.body;
   try {
@@ -89,9 +75,40 @@ app.post('/voice', async (req, res) => {
   }
 });
 
+app.post('/whisper', async (req, res) => {
+  const audioData = req.body.message;
+  try {
+    const transcription  = await openai.audio.transcriptions.create({
+      file: fs.createReadStream(audioData),
+      model: "whisper-1",
+      language: "en",
+      prompt: "Please transcribe this audio, including filler words and pauses.",
+      response_format: "text"
+    });
+    res.json({ message: transcription.text });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while processing the audio data.' });
+  }
+})
+
 app.use("/", (req, res) => {
   res.send("Server is running");
 })
+
+app.post('/retrieve', async (req, res) => {
+  const { threadId } = req.body;
+  try {
+    const response = await openai.beta.threads.messages.list(threadId);
+    response.body.data.forEach((message) => {
+      console.log(message.content);
+    });
+    res.json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to retrieve messages' });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

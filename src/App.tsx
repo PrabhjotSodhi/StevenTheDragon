@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import sandtimer from "./assets/sandtimer.gif";
 
 interface CardProps {
@@ -17,6 +17,7 @@ type Session = {
   title: string;
   conversation: Message[];
 };
+type AudioDataState = Blob | null;
 
 const lawList = [
   "Law 1: Fill your five buckets in the right order",
@@ -157,6 +158,9 @@ function App() {
   const [isNewChatLoading, setIsNewChatLoading] = useState(false);
   const [law, setLaw] = useState(lawList[Math.floor(Math.random() * lawList.length)]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioData, setAudioData] = useState<Blob | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
   const createNewChat = async () => {
     setIsNewChatLoading(true);
@@ -267,6 +271,59 @@ function App() {
     setIsLoading(false);
     setResponse(data.message);
     setConversation([...conversation, { role: "user", content: message }, { role: "assistant", content: data.message }]);
+  };
+
+  const sendAudioData = async () => {
+    if (!audioData) {
+      console.error("No audio data to send");
+      return;
+    }
+    try {
+      const response = await fetch("https://steventhedragon.onrender.com/whisper", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: audioData,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error(response);
+      }
+
+      const data = await response.json();
+      console.log(data.message);
+    } catch (error) {
+      console.error("Failed to send audio data:", error);
+    }
+  };
+
+  const startRecording = async () => {
+    const mediaStream = await window.navigator.mediaDevices.getUserMedia({ audio: true });
+    const mediaRecorder = new MediaRecorder(mediaStream);
+    mediaRecorder.ondataavailable = (event) => {
+      setAudioData(event.data); // Update the type of audioData to allow for Blob or null
+    };
+    mediaRecorder.start();
+    mediaRecorderRef.current = mediaRecorder;
+    setIsRecording(true);
+  };
+  const stopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+    }
+    setIsRecording(false);
+  };
+  const handleRecording = () => {
+    setIsRecording(!isRecording);
+    if (!isRecording) {
+      startRecording();
+    } else {
+      stopRecording();
+      sendAudioData();
+    }
   };
 
   return (
@@ -443,6 +500,19 @@ Please provide insights into at least three distinct opportunities, ensuring a d
               <div className="relative flex h-full flex-1 items-stretch md:flex-col">
                 <div className="flex w-full items-center">
                   <textarea id="prompt-textarea" value={message} onChange={(e) => setMessage(e.target.value)} data-id="root" rows={1} placeholder="Message StevenTheDragon..." className="max-h-25 m-0 w-full resize-none rounded-lg bg-transparent py-[10px] pr-10 placeholder-white/50 focus:ring-0 focus-visible:ring-0 md:py-3.5 md:pr-12"></textarea>
+                  {isRecording ? (
+                    <button type="button" onClick={handleRecording} className="absolute bottom-1 right-10 inline-flex cursor-pointer justify-center rounded-full p-2 text-red-400 hover:bg-gray-600 hover:text-white md:bottom-2 md:right-11">
+                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                        <path fill="currentColor" d="M192 0c-53 0-96 43-96 96v160c0 53 43 96 96 96s96-43 96-96V96c0-53-43-96-96-96zM64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 89.1 66.2 162.7 152 174.4V464h-48c-13.3 0-24 10.7-24 24s10.7 24 24 24h144c13.3 0 24-10.7 24-24s-10.7-24-24-24h-48v-33.6c85.8-11.7 152-85.3 152-174.4v-40c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 70.7-57.3 128-128 128S64 326.7 64 256v-40z" />
+                      </svg>
+                    </button>
+                  ) : (
+                    <button type="button" onClick={handleRecording} className="absolute bottom-1 right-10 inline-flex cursor-pointer justify-center rounded-full p-2 text-gray-400 hover:bg-gray-600 hover:text-white md:bottom-2 md:right-11">
+                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                        <path fill="currentColor" d="M192 0c-53 0-96 43-96 96v160c0 53 43 96 96 96s96-43 96-96V96c0-53-43-96-96-96zM64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 89.1 66.2 162.7 152 174.4V464h-48c-13.3 0-24 10.7-24 24s10.7 24 24 24h144c13.3 0 24-10.7 24-24s-10.7-24-24-24h-48v-33.6c85.8-11.7 152-85.3 152-174.4v-40c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 70.7-57.3 128-128 128S64 326.7 64 256v-40z" />
+                      </svg>
+                    </button>
+                  )}
                   <button type="submit" className="absolute bottom-1 right-1 inline-flex cursor-pointer justify-center rounded-full p-2 text-gray-400 hover:bg-gray-600 hover:text-white md:bottom-2 md:right-2">
                     <svg className="h-5 w-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
                       <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
