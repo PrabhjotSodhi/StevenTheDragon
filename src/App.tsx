@@ -90,7 +90,7 @@ function ChatBubble({ role, content }: Message) {
 
   const playAudio = () => {
     setIsVoiceLoading(true);
-    fetch("http://steventhedragon.onrender.com/voice", {
+    fetch("https://steventhedragon.onrender.com/voice", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -163,7 +163,7 @@ function App() {
 
   const createNewChat = async () => {
     setIsNewChatLoading(true);
-    const response = await fetch("http://steventhedragon.onrender.com/create", {
+    const response = await fetch("https://steventhedragon.onrender.com/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -250,7 +250,7 @@ function App() {
     setConversation([...conversation, { role: "user", content: message }]);
     setIsLoading(true);
 
-    const response = await fetch("http://steventhedragon.onrender.com/steven", {
+    const response = await fetch("https://steventhedragon.onrender.com/steven", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -288,7 +288,7 @@ function App() {
       };
       reader.readAsDataURL(audioData);
     });
-    const response = await fetch("http://steventhedragon.onrender.com/whisper", {
+    const response = await fetch("https://steventhedragon.onrender.com/whisper", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ file: base64Audio }),
@@ -372,7 +372,7 @@ function App() {
         <div className="flex w-full flex-col items-center border-t-2 pt-4">
           <p>
             Made by{" "}
-            <a href="https://github.com/PrabhjotSodhi/StevenTheDragon" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.linkedin.com/in/prabhjotsodhi/" target="_blank" rel="noopener noreferrer">
               Prabhjot Sodhi
             </a>
           </p>
